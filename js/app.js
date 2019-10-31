@@ -1,16 +1,16 @@
 //query select the input fields to gether data
-const budgetInput = ?;
-const expenseTitleInput = ?;
-const expenseValueInput = ?;
+const budgetInput = document.querySelector('#budgetAmount');
+const expenseTitleInput = document.querySelector('#expenseType');
+const expenseValueInput = document.querySelector('#expenseAmount');
 
 //query select the buttons to trigger events
-const calculateBtn = ?;
-const addExpenseBtn = ?;
+const calculateBtn = document.querySelector('#calculate');
+const addExpenseBtn = document.querySelector('#addExpense');
 
 //query select the data to display the results
-const expensesList = ?;
-let budgetValueDisplay = ?;
-let balanceValueDisplay = ?;
+const expensesList = document.querySelector('.expenseCollection');
+let budgetValueDisplay = document.querySelector('#budgetValue');
+let balanceValueDisplay = document.querySelector('#balanceValue');
 
 //our running total for our budget
 let totalFunds = 0;
@@ -20,23 +20,49 @@ let itemId = 0;
 loadEventListeners();
 
 function loadEventListeners() {
-  //add a click event listener for the calculate button that triggers a createBudget function
-  //add a click event listener for the add expense button that triggers an addExpense function
+  calculateBtn.addEventListener('click', createBudget);
+  addExpenseBtn.addEventListener('click', addExpense);
 }
 
 function createBudget(event) {
-  
+  totalFunds = budgetInput.value;
+  budgetValueDisplay.innerText = totalFunds;
   event.preventDefault();
 }
 
 function addExpense(event) {
-  //create an expense object that has 3 properties...id, title and amount 
-  //note id is generated with our itemId variable and title and amount will be entered by the user in the text fields
+  let expense = {
+    id: itemId,
+    title: expenseTitleInput.value,
+    amount: expenseValueInput.value
+  };
 
-  //dynamically create the list and take away from the budget
-  //create a remove button and once an item is deleted from the list it is added back to the budget
-  
-  
+  totalFunds -= expense.amount;
+  console.log(totalFunds);
+
+  const expenseLi = document.createElement('li');
+  expenseLi.className = 'expenseLi';
+  expenseLi.innerHTML = `
+  <p>${expense.title}</p>
+  <p>:</p>
+  <p id= ${expense.id}>${expense.amount}</p>
+  `;
+
+  const removeButton = document.createElement('a');
+  removeButton.className = 'fa fa-trash';
+  expenseLi.appendChild(removeButton);
+  expensesList.appendChild(expenseLi);
+
+  removeButton.addEventListener('click', () => {
+    const amtToAdd = document.getElementById(expense.id).innerText;
+    const amtToAddValue = parseInt(amtToAdd);
+    totalFunds += amtToAddValue;
+    expensesList.removeChild(expenseLi);
+    balanceValueDisplay.innerText = totalFunds;
+  });
+
+  balanceValueDisplay.innerText = totalFunds;
+
   itemId++;
   expenseTitleInput.value = '';
   expenseValueInput.value = '';
